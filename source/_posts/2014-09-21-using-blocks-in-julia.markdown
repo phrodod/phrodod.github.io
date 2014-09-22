@@ -3,6 +3,76 @@ layout: post
 title: "Using blocks in Julia"
 date: 2014-09-21 11:52:44 -0700
 comments: true
-published: false
 categories: Julia
 ---
+Blocks, like lambdas, are a way of defining anonymous functions in Julia. This
+post details how to write code that uses blocks. Let's start with a canonical
+Julia example:
+
+``` jlcon Canonical example using map
+julia> f(x) = 2x
+f (generic function with 1 method)
+
+julia> map(f, [2,4,6,8])
+4-element Array{Int64,1}:
+  4
+  8
+ 12
+ 16
+```
+
+In this example, I pass a function to the map function, which applies the
+function supplied as the first argument to each element of the array passed as
+the second argument. Here, the function simply doubles the values.
+
+I can do this more simply by using a lambda here:
+``` jlcon Canonical lambda example using map
+julia> map(x -> 2x, [2,4,6,8])
+4-element Array{Int64,1}:
+  4
+  8
+ 12
+ 16
+```
+
+Here, the function is simply defined in-line. For a simple function, this is
+fine. But if the function gets more complicated, the lambda form would
+hide the connection between the array and the map call. Traditionally, that's
+when you'd create a separate function. But with Julia, we have another option.
+The block allows you to provide the function between a `do` and an `end`
+following the call to map. It looks like this:
+``` jlcon Canonical block example using map
+julia> map([2,4,6,8]) do x
+    2x
+end
+4-element Array{Int64,1}:
+  4
+  8
+ 12
+ 16
+```
+
+Notice that in this example, the call to map looks like it only takes one
+argument. But the block following the function call provides the function that
+gets passed as the first argument. Note that the argument to the block gets
+defined on the same line as the do statement, but the remaining portion of the
+block goes on following lines until you reach the `end` statement.
+
+
+``` julia Using a block to write file contents
+open("myfile.dat","w") do f
+   write(f,"hello world")
+end
+```
+
+In this example, I open a file. Normally, this returns a file handle, which I
+have to keep track of. I write data using the file handle, and when I'm all
+done, I have to remember to close the file.
+
+When I use a block, though, I write the code that handles the open file
+between a `do` and `end` pair, using as variables to this code anything after
+the `do`.
+
+In this case, my local variable within the `do` block is `f`, the file handle.
+I then write some data to it. I don't need to worry about closing the file
+when I'm done, because I'm using a special form of the open statment.
