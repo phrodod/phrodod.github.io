@@ -4,7 +4,7 @@
   <title><![CDATA[Bioinformatics in Julia]]></title>
   <link href="http://phrodod.github.io/atom.xml" rel="self"/>
   <link href="http://phrodod.github.io/"/>
-  <updated>2014-09-21T13:44:31-07:00</updated>
+  <updated>2014-09-21T23:15:17-07:00</updated>
   <id>http://phrodod.github.io/</id>
   <author>
     <name><![CDATA[Phillip David]]></name>
@@ -12,5 +12,111 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Using Blocks in Julia]]></title>
+    <link href="http://phrodod.github.io/blog/2014/09/21/using-blocks-in-julia/"/>
+    <updated>2014-09-21T11:52:44-07:00</updated>
+    <id>http://phrodod.github.io/blog/2014/09/21/using-blocks-in-julia</id>
+    <content type="html"><![CDATA[<p>Blocks, like lambdas, are a way of defining anonymous functions in Julia. This
+post details how to write code that uses blocks. Let&rsquo;s start with a canonical
+Julia example:</p>
+
+<figure class='code'><figcaption><span>Canonical example using map</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='jlcon'><span class='line'><span class="gp">julia&gt;</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="mi">2</span><span class="n">x</span>
+</span><span class='line'><span class="go">f (generic function with 1 method)</span>
+</span><span class='line'>
+</span><span class='line'><span class="gp">julia&gt;</span> <span class="n">map</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">])</span>
+</span><span class='line'><span class="go">4-element Array{Int64,1}:</span>
+</span><span class='line'><span class="go">  4</span>
+</span><span class='line'><span class="go">  8</span>
+</span><span class='line'><span class="go"> 12</span>
+</span><span class='line'><span class="go"> 16</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this example, I pass a function to the map function, which applies the
+function supplied as the first argument to each element of the array passed as
+the second argument. Here, the function simply doubles the values.</p>
+
+<p>I can do this more simply by using a lambda here:</p>
+
+<figure class='code'><figcaption><span>Canonical lambda example using map</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='jlcon'><span class='line'><span class="gp">julia&gt;</span> <span class="n">map</span><span class="p">(</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="mi">2</span><span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">])</span>
+</span><span class='line'><span class="go">4-element Array{Int64,1}:</span>
+</span><span class='line'><span class="go">  4</span>
+</span><span class='line'><span class="go">  8</span>
+</span><span class='line'><span class="go"> 12</span>
+</span><span class='line'><span class="go"> 16</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here, the function is simply defined in-line. For a simple function, this is
+fine. But if the function gets more complicated, the lambda form would
+hide the connection between the array and the map call. Traditionally, that&rsquo;s
+when you&rsquo;d create a separate function. But with Julia, we have another option.
+The block allows you to provide the function between a <code>do</code> and an <code>end</code>
+following the call to map. It looks like this:</p>
+
+<figure class='code'><figcaption><span>Canonical block example using map</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='jlcon'><span class='line'><span class="gp">julia&gt;</span> <span class="n">map</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">8</span><span class="p">])</span> <span class="k">do</span> <span class="n">x</span>
+</span><span class='line'><span class="go">    2x</span>
+</span><span class='line'><span class="go">end</span>
+</span><span class='line'><span class="go">4-element Array{Int64,1}:</span>
+</span><span class='line'><span class="go">  4</span>
+</span><span class='line'><span class="go">  8</span>
+</span><span class='line'><span class="go"> 12</span>
+</span><span class='line'><span class="go"> 16</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice that in this example, the call to map looks like it only takes one
+argument. But the block following the function call provides the function that
+gets passed as the first argument. Note that the argument to the block gets
+defined on the same line as the do statement, but the remaining portion of the
+block goes on following lines until you reach the <code>end</code> statement.</p>
+
+<figure class='code'><figcaption><span>Using a block to write file contents</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='julia'><span class='line'><span class="n">open</span><span class="p">(</span><span class="s">&quot;myfile.dat&quot;</span><span class="p">,</span><span class="s">&quot;w&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="n">f</span>
+</span><span class='line'>   <span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this example, I open a file. Normally, this returns a file handle, which I
+have to keep track of. I write data using the file handle, and when I&rsquo;m all
+done, I have to remember to close the file.</p>
+
+<p>When I use a block, though, I write the code that handles the open file
+between a <code>do</code> and <code>end</code> pair, using as variables to this code anything after
+the <code>do</code>.</p>
+
+<p>In this case, my local variable within the <code>do</code> block is <code>f</code>, the file handle.
+I then write some data to it. I don&rsquo;t need to worry about closing the file
+when I&rsquo;m done, because I&rsquo;m using a special form of the open statment.</p>
+]]></content>
+  </entry>
   
 </feed>
