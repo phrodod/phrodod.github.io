@@ -58,6 +58,14 @@ gets passed as the first argument. Note that the argument to the block gets
 defined on the same line as the do statement, but the remaining portion of the
 block goes on following lines until you reach the `end` statement.
 
+By allowing blocks instead of allowing only simple lambda expressions, Julia
+allows you to perform significant work inside the block. The most obvious
+example is file manipulation. The open statement has a version that takes a
+function as an optional first argument. If you call that version, the file is
+opened, passes the file handle to the function, then closes the file at the
+end. This allows the open function to take care of all of the nasty edge cases
+like end of file, file read errors, etc, along with normal file activity. All
+I need to do is to use the opened file handle.
 
 ``` julia Using a block to write file contents
 open("myfile.dat","w") do f
@@ -65,14 +73,9 @@ open("myfile.dat","w") do f
 end
 ```
 
-In this example, I open a file. Normally, this returns a file handle, which I
-have to keep track of. I write data using the file handle, and when I'm all
-done, I have to remember to close the file.
-
-When I use a block, though, I write the code that handles the open file
-between a `do` and `end` pair, using as variables to this code anything after
-the `do`.
-
 In this case, my local variable within the `do` block is `f`, the file handle.
 I then write some data to it. I don't need to worry about closing the file
-when I'm done, because I'm using a special form of the open statment.
+when I'm done, because I'm using the special form of the open statment. When
+handling large files (too big to fit in memory), it's often desirable to
+process them a line or a few lines at a time. With the special open structure,
+you can do this, yet still allow Julia to clean up behind you.
