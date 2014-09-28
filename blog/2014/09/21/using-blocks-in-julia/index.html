@@ -9,8 +9,7 @@
   <meta name="author" content="Phillip David">
 
   
-  <meta name="description" content="Blocks, like lambdas, are a way of defining anonymous functions in Julia. This
-post details how to write code that uses blocks. Let&rsquo;s start &hellip;">
+  <meta name="description" content="Blocks, like lambdas, are a way of defining anonymous functions in Julia. This post details how to write code that uses blocks. Let&rsquo;s start &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,14 +80,15 @@ post details how to write code that uses blocks. Let&rsquo;s start &hellip;">
 
 <time class='entry-date' datetime='2014-09-21T11:52:44-07:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>11:52 am</span></time>
         
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://phrodod.github.io">Comments</a>
+        
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Blocks, like lambdas, are a way of defining anonymous functions in Julia. This
-post details how to write code that uses blocks. Let&rsquo;s start with a canonical
-Julia example:</p>
+<div class="entry-content"><p>Blocks, like lambdas, are a way of defining anonymous functions in Julia. This post details how to write code that uses blocks. Let&rsquo;s start with a canonical Julia example:</p>
 
 <figure class='code'><figcaption><span>Canonical example using map</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -111,9 +111,7 @@ Julia example:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>In this example, I pass a function to the map function, which applies the
-function supplied as the first argument to each element of the array passed as
-the second argument. Here, the function simply doubles the values.</p>
+<p>In this example, I pass a function to the map function, which applies the function supplied as the first argument to each element of the array passed as the second argument. Here, the function simply doubles the values.</p>
 
 <p>I can do this more simply by using a lambda here:</p>
 
@@ -132,12 +130,7 @@ the second argument. Here, the function simply doubles the values.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Here, the function is simply defined in-line. For a simple function, this is
-fine. But if the function gets more complicated, the lambda form would
-hide the connection between the array and the map call. Traditionally, that&rsquo;s
-when you&rsquo;d create a separate function. But with Julia, we have another option.
-The block allows you to provide the function between a <code>do</code> and an <code>end</code>
-following the call to map. It looks like this:</p>
+<p>Here, the function is simply defined in-line. For a simple function, this is fine. But if the function gets more complicated, the lambda form would hide the connection between the array and the map call. Traditionally, that&rsquo;s when you&rsquo;d create a separate function. But with Julia, we have another option.  The block allows you to provide the function between a <code>do</code> and an <code>end</code> following the call to map. It looks like this:</p>
 
 <figure class='code'><figcaption><span>Canonical block example using map</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -158,20 +151,9 @@ following the call to map. It looks like this:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Notice that in this example, the call to map looks like it only takes one
-argument. But the block following the function call provides the function that
-gets passed as the first argument. Note that the argument to the block gets
-defined on the same line as the do statement, but the remaining portion of the
-block goes on following lines until you reach the <code>end</code> statement.</p>
+<p>Notice that in this example, the call to map looks like it only takes one argument. But the block following the function call provides the function that gets passed as the first argument. Note that the argument to the block gets defined on the same line as the do statement, but the remaining portion of the block goes on following lines until you reach the <code>end</code> statement.</p>
 
-<p>By allowing blocks instead of allowing only simple lambda expressions, Julia
-allows you to perform significant work inside the block. The most obvious
-example is file manipulation. The open statement has a version that takes a
-function as an optional first argument. If you call that version, the file is
-opened, passes the file handle to the function, then closes the file at the
-end. This allows the open function to take care of all of the nasty edge cases
-like end of file, file read errors, etc, along with normal file activity. All
-I need to do is to use the opened file handle.</p>
+<p>By allowing blocks instead of allowing only simple lambda expressions, Julia allows you to perform significant work inside the block. The most obvious example is file manipulation. The open statement has a version that takes a function as an optional first argument. If you call that version, the file is opened, passes the file handle to the function, then closes the file at the end. This allows the open function to take care of all of the nasty edge cases like end of file, file read errors, etc, along with normal file activity. All I need to do is to use the opened file handle.</p>
 
 <figure class='code'><figcaption><span>Using a block to write file contents</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -182,12 +164,7 @@ I need to do is to use the opened file handle.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>In this case, my local variable within the <code>do</code> block is <code>f</code>, the file handle.
-I then write some data to it. I don&rsquo;t need to worry about closing the file
-when I&rsquo;m done, because I&rsquo;m using the special form of the open statment. When
-handling large files (too big to fit in memory), it&rsquo;s often desirable to
-process them a line or a few lines at a time. With the special open structure,
-you can do this, yet still allow Julia to clean up behind you.</p>
+<p>In this case, my local variable within the <code>do</code> block is <code>f</code>, the file handle.  I then write some data to it. I don&rsquo;t need to worry about closing the file when I&rsquo;m done, because I&rsquo;m using the special form of the open statment. When handling large files (too big to fit in memory), it&rsquo;s often desirable to process them a line or a few lines at a time. With the special open structure, you can do this, yet still allow Julia to clean up behind you.</p>
 </div>
 
 
@@ -221,6 +198,8 @@ you can do this, yet still allow Julia to clean up behind you.</p>
   
   
   
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
 </div>
 
     
@@ -230,6 +209,12 @@ you can do this, yet still allow Julia to clean up behind you.</p>
     </p>
   </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -293,7 +278,32 @@ you can do this, yet still allow Julia to clean up behind you.</p>
 </footer>
   
 
+<script type="text/javascript">
+      var disqus_shortname = 'phrodod';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://phrodod.github.io/blog/2014/09/21/using-blocks-in-julia/';
+        var disqus_url = 'http://phrodod.github.io/blog/2014/09/21/using-blocks-in-julia/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
 
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 
 
 
